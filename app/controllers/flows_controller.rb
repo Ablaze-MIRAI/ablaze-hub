@@ -1,31 +1,22 @@
 class FlowsController < ApplicationController
 
   def registration
+    kratos_url = ENV['KRATOS_PUBLIC_URL']
     flow_id = params[:flow]
-    if not flow_id
-      kratos_url = ENV['KRATOS_PUBLIC_URL']
-      full_url = "#{kratos_url}/self-service/registration/browser"
-      response = HTTP.headers(:accept => "application/json").get(full_url)
 
-      token = get_csrf_token(response)
-
-      cookies[:csrf_token] = {
-        :value => token,
-        :expires => 1.hour.from_now
-      }
-      @flow_id = JSON.parse(response.body)["id"]
-      @response = JSON.pretty_generate(JSON.parse(response.body))
-
-    else
-      kratos_url = ENV['KRATOS_PUBLIC_URL']
+    if flow_id
       full_url = "#{kratos_url}/self-service/registration/flows?id=#{flow_id}"
-      token = cookies[:csrf_token]
-      response = HTTP
-                   .headers(:accept => "application/json")
-                    .headers("X-CSRF-Token" => token)
-                   .get(full_url)
+      _cookies = cookies.to_h
+      response = HTTP.headers("Cookie" => _cookies).get(full_url)
+      @status = response.status
       @response = JSON.pretty_generate(JSON.parse(response.body))
+      return
     end
+
+    full_url = "#{kratos_url}/self-service/registration/browser?"
+    response = HTTP.get(full_url)
+    @status = response.status
+    @response = JSON.pretty_generate(JSON.parse(response.body))
   end
 
   def login

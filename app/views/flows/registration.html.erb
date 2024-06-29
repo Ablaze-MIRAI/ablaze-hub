@@ -4,6 +4,7 @@
 
 <% if @response %>
   <div class="alert alert-danger">
+    <p><%= @status %></p>
     <%= link_to "Do redirect", "/registration?flow=#{@flow_id}" %>
     <pre>
       <%= @response %>

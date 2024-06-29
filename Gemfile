@@ -10,6 +10,8 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "http"
 gem "jbuilder"
+gem 'dotenv', groups: [:development, :test]
+gem "json"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"

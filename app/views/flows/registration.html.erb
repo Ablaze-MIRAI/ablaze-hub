@@ -1,1 +1,12 @@
-<h2>Registration</h2>
+<h2>
+  Registration
+</h2>
+
+<% if @response %>
+  <div class="alert alert-danger">
+    <%= link_to "Do redirect", "/registration?flow=#{@flow_id}" %>
+    <pre>
+      <%= @response %>
+    </pre>
+  </div>
+<% end %>

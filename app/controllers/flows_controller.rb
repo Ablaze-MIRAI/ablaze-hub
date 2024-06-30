@@ -36,6 +36,9 @@ class FlowsController < ApplicationController
       redirect_to root_path
     elsif response.status == 400
       redirect_to "/registration?flow=#{response.parse["id"]}"
+    elsif response.status == 422
+      url = response.parse["redirect_browser_to"]
+      redirect_to url, allow_other_host: true
     elsif response.status == 303
       redirect_to response.headers["Location"]
     else

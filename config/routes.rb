@@ -7,7 +7,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root "application#index"
 
-  get "registration" => "flows#registration"
-  get "login" => "flows#login"
+  get "registration", to: "flows#registration"
+  post "registration", to: "flows#registration_submit"
+  get "login", to: "flows#login"
+  get "error", to: "flows#error"
 end

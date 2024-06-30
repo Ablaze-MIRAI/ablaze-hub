@@ -1,14 +1,16 @@
-<h2>
-  Registration
-</h2>
+<div class="flex flex-col justify-start h-screen">
+  <h2 class="text-3xl mb-6">Registration</h2>
 
-<% if @nodes %>
-  <%= form_with url: registration_path, method: :post do || %>
-    <input type="hidden" name="action_url" id="action_url" value="<%= @submit_url %>">
-    <% @nodes.each do |node| %>
-      <% if node["attributes"]["node_type"] == "input" %>
-        <%= get_input_node(node) %>
-      <% end %>
+  <% if @nodes %>
+    <%= form_with url: registration_path, method: :post do || %>
+      <input type="hidden" name="action_url" id="action_url" value="<%= @submit_url %>">
+      <div class="flex flex-col">
+        <% @nodes.each do |node| %>
+          <% if node["attributes"]["node_type"] == "input" %>
+            <%= get_input_node(node) %>
+          <% end %>
+        <% end %>
+      </div>
     <% end %>
   <% end %>
-<% end %>
+</div>

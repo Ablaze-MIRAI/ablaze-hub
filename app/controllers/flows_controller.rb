@@ -6,32 +6,76 @@ class FlowsController < ApplicationController
 
     if flow_id
       full_url = "#{kratos_url}/self-service/registration/flows?id=#{flow_id}"
-      _cookies = cookies.to_h
-      response = HTTP.headers("Cookie" => _cookies).get(full_url)
-      @status = response.status
-      @response = JSON.pretty_generate(JSON.parse(response.body))
+      response = fetch_content(full_url)
+      if response.status == 410
+        @error = JSON.pretty_generate(response.parse)
+        @flow_type = "registration"
+        render :error
+        return
+      end
+      @submit_url = response.parse["ui"]["action"]
+      @flow_id = flow_id
+      @nodes = get_ui_nodes(response.body)
       return
     end
 
     full_url = "#{kratos_url}/self-service/registration/browser?"
     response = HTTP.get(full_url)
-    @status = response.status
-    @response = JSON.pretty_generate(JSON.parse(response.body))
+    set_cookie(response)
+    redirect_to response.headers["Location"]
+  end
+
+  def registration_submit
+    form_data = params
+    action_url = form_data["action_url"]
+    response = HTTP
+                 .headers("Content-Type" => "application/json")
+                 .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
+                 .post(action_url, :json => form_data)
+    # If the response is a 400, then we need to render the registration form again.
+    if response.status == 400
+      redirect_to "/registration?flow=#{response.parse["id"]}"
+    elsif response.status == 303
+      redirect_to response.headers["Location"]
+    else
+      @error = JSON.pretty_generate(response.parse)
+      @flow_type = "registration"
+    end
   end
 
   def login
   end
 
+  def error
+    flow_id = params[:flow]
+    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{flow_id}"
+    response = fetch_content(full)
+    @flow_type = "registration"
+    @error = JSON.pretty_generate(response.parse)
+  end
+
   private
 
-  def get_csrf_token(response)
-    nodes = JSON.parse(response.body)["ui"]["nodes"]
-    csrf_token = nil
-    nodes.each do |node|
-      if node["attributes"]["name"] == "csrf_token"
-        csrf_token = node["attributes"]["value"]
-      end
-    end
-    csrf_token
+  def set_cookie(response)
+    response_headers = response.headers
+    set_cookie = response_headers["Set-Cookie"]
+    split_cookie = set_cookie.split(";")
+    cookie_name = split_cookie[0].split("=")[0]
+    cookie_value = split_cookie[0].split("=")[1]
+    cookie_name_sym = cookie_name.to_sym
+    cookies[cookie_name_sym] = cookie_value
+  end
+
+  def get_ui_nodes(body)
+    JSON.parse(body)["ui"]["nodes"]
+  end
+
+  def process_response(response, flow_type) end
+
+  def fetch_content(url)
+    cookie_string = cookies.map { |k, v| "#{k}=#{v}=" }.join("; ")
+    HTTP.headers("Cookie" => cookie_string)
+        .headers(:accept => "application/json")
+        .get(url)
   end
 end

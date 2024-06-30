@@ -48,13 +48,34 @@ module FlowsHelper
     end
     html += "</div>" if messages.length > 0
     html += "<label for='#{name}'>#{meta["label"]["text"]}</label>" if meta["label"]
-    html += "<input type='#{type}' name='#{name}' id='#{name}'"
+    html += "<input type='#{type}' name='#{name}' id='#{get_random_id}' class='#{get_style_classes(type)}'"
     html += " required" if required
     html += " autocomplete='#{autocomplete}'" if autocomplete
     html += " disabled" if disabled
+    html += " formnovalidate" if name == "provider"
     html += " value='#{value}'" if value
     html += ">"
 
     html.html_safe
+  end
+
+  private
+
+  ##
+  # Generates a random id.
+  # Returns:: An 8 character long random id.
+  def get_random_id
+    (0...8).map { (65 + rand(26)).chr }.join
+  end
+
+  ##
+  # Returns the style classes for a given type.
+  def get_style_classes(type)
+    case type
+    when "submit"
+      return "btn btn-primary"
+    else
+      return ""
+    end
   end
 end

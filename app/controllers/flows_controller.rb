@@ -32,8 +32,9 @@ class FlowsController < ApplicationController
                  .headers("Content-Type" => "application/json")
                  .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
                  .post(action_url, :json => form_data)
-    # If the response is a 400, then we need to render the registration form again.
-    if response.status == 400
+    if response.status == 200
+      redirect_to root_path
+    elsif response.status == 400
       redirect_to "/registration?flow=#{response.parse["id"]}"
     elsif response.status == 303
       redirect_to response.headers["Location"]

@@ -2,12 +2,13 @@
   Registration
 </h2>
 
-<% if @response %>
-  <div class="alert alert-danger">
-    <p><%= @status %></p>
-    <%= link_to "Do redirect", "/registration?flow=#{@flow_id}" %>
-    <pre>
-      <%= @response %>
-    </pre>
-  </div>
+<% if @nodes %>
+  <%= form_with url: registration_path, method: :post do || %>
+    <input type="hidden" name="action_url" id="action_url" value="<%= @submit_url %>">
+    <% @nodes.each do |node| %>
+      <% if node["attributes"]["node_type"] == "input" %>
+        <%= get_input_node(node) %>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

@@ -1,0 +1,11 @@
+
+<% if @error %>
+  <div class="alert alert-danger">
+    <strong>Error:</strong>
+    <pre>
+      <%= @error %>
+    </pre>
+  </div>
+
+  <%= link_to 'Back', @flow_type, class: 'btn btn-primary' %>
+<% end %>

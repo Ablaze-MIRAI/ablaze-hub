@@ -4,7 +4,7 @@
     <div class="mr-4 hidden md:flex">
       <a
         class="mr-6 flex items-center space-x-2"
-        href="/">
+        href="/app/assets/builds">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 256 256"
@@ -37,9 +37,6 @@
         <span class="hidden font-bold sm:inline-block">shadcn/ui on Rails</span>
       </a>
       <nav class="flex items-center space-x-6 text-sm font-medium">
-        <%= link_to "Home", root_path, class: "transition-colors hover:text-foreground/80  #{params[:controller] == 'application' ? "text-foreground" : "text-foreground/60"}" %>
-        <%= link_to "Documentation", documentation_index_path, class: "transition-colors hover:text-foreground/80 text-foreground/60 #{params[:controller] == 'documentation' ? "text-foreground" : "text-foreground/60"}" %>
-        <%= link_to "Components", component_path("accordion"), class: "transition-colors hover:text-foreground/80 text-foreground/60 #{params[:controller] == 'components' ? "text-foreground" : "text-foreground/60"}" %>
         <a
           class="hidden text-foreground/60 transition-colors hover:text-foreground/80 lg:block"
           href="https://github.com/aviflombaum/shadcn-rails">GitHub</a>

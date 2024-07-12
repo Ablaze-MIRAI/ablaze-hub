@@ -13,6 +13,8 @@ gem "jbuilder"
 gem 'dotenv', groups: [:development, :test]
 gem "json"
 
+gem 'rack-cors', require: 'rack/cors'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
@@ -51,3 +53,5 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 2.6"
+
+gem "shadcn-ui", "~> 0.0.13"

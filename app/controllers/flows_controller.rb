@@ -13,6 +13,16 @@ class FlowsController < ApplicationController
         render :error
         return
       end
+      if response.status == 400
+        redirect_to "/registration?flow=#{response.parse["id"]}"
+        return
+      end
+
+      if response.status == 303
+        redirect_to response.headers["Location"]
+        return
+      end
+
       @submit_url = response.parse["ui"]["action"]
       @flow_id = flow_id
       @nodes = get_ui_nodes(response.body)
@@ -36,6 +46,11 @@ class FlowsController < ApplicationController
       redirect_to root_path
     elsif response.status == 400
       redirect_to "/registration?flow=#{response.parse["id"]}"
+    elsif response.status == 422
+      url = response.parse["redirect_browser_to"]
+      set_cookie(response)
+      @redirect_url = url
+      render :registration, status: 422
     elsif response.status == 303
       redirect_to response.headers["Location"]
     else

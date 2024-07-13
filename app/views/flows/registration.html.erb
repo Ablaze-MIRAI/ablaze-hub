@@ -20,7 +20,7 @@
       <div class="flex flex-col">
         <% @nodes.each do |node| %>
           <% if node["attributes"]["node_type"] == "input" %>
-            <%= get_input_node(node) %>
+            <%= render Flows::UiNodeComponent.new(node: node) %>
           <% end %>
         <% end %>
       </div>

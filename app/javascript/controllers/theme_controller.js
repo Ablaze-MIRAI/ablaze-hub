@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
 
+/**
+ * This controller is responsible for switching between system, light and dark themes.
+ */
 export default class extends Controller {
     static targets = ["toggleButton"];
 
@@ -8,18 +11,18 @@ export default class extends Controller {
     }
 
     toggle() {
-        const isDarkMode = document.documentElement.classList.toggle("dark");
+        const mode = document.documentElement.classList.toggle("dark");
         this.saveThemePreference(isDarkMode);
     }
 
     loadThemePreference() {
-        const isDarkMode = localStorage.getItem("themePreference") === "true";
+        const isDarkMode = localStorage.getItem("themePreference") === "dark";
         if (isDarkMode) {
             document.documentElement.classList.add("dark");
         }
     }
 
-    saveThemePreference(isDarkMode) {
-        localStorage.setItem("themePreference", isDarkMode);
+    saveThemePreference(mode) {
+        localStorage.setItem("themePreference", mode);
     }
 }

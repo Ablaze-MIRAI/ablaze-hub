@@ -13,6 +13,7 @@ gem "jbuilder"
 gem 'dotenv', groups: [:development, :test]
 gem "json"
 
+gem "view_component"
 gem 'rack-cors', require: 'rack/cors'
 
 # Use Redis adapter to run Action Cable in production
@@ -30,9 +31,12 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+gem 'sorbet-runtime'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem 'sorbet', :group => :development
 end
 
 group :development do

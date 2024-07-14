@@ -1,0 +1,29 @@
+<% if @messages.length > 0 %>
+  <div>
+    <% @messages.each do |message| %>
+      <p <%= "class=text-destructive" if message.type == "error" %>>
+        <%= message.text %>
+      </p>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @meta && @meta["label"] %>
+  <label for="<%= @name %>"><%= @meta["label"]["text"] %></label>
+<% end %>
+
+<input
+  type='<%= @type %>'
+  <%= 'required' if @required %>
+  aria-label="<%= @name %>"
+  id="<%= helpers.get_random_id %>"
+  name="<%= @name %>"
+  <% if @value %>
+  value="<%= @value %>"
+  <% end %>
+  <% if @autocomplete %>
+  autocomplete="<%= @autocomplete %>"
+  <% end %>
+  <%= 'disabled' if @disabled %>
+  <%= 'formnovalidate' if @name == 'provider' %>
+    />

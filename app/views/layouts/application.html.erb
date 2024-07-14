@@ -5,15 +5,31 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
 
+  <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
   <%= javascript_importmap_tags %>
+
+  <script>
+      if (localStorage.theme === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          if(!('theme' in localStorage)) {
+              localStorage.theme = 'dark'
+          }
+
+          const theme = localStorage.theme
+          if(theme === 'dark') {
+              document.documentElement.classList.add('dark')
+          } else {
+              document.documentElement.classList.remove('dark')
+          }
+      }
+  </script>
 </head>
 
 <body>
 <%= render 'layouts/shared/header' %>
-<main class="container mx-auto p-5 flex dark:bg-gray-800">
+<main class="container mx-auto p-5 flex">
   <%= yield %>
 </main>
 </body>

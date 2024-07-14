@@ -1,8 +1,9 @@
-
 <% if @messages.length > 0 %>
   <div>
     <% @messages.each do |message| %>
-      <p><%= message["text"] %></p>
+      <p <%= "class=text-destructive" if message.type == "error" %>>
+        <%= message.text %>
+      </p>
     <% end %>
   </div>
 <% end %>
@@ -17,8 +18,12 @@
   aria-label="<%= @name %>"
   id="<%= helpers.get_random_id %>"
   name="<%= @name %>"
-  <%= 'disabled' if @disabled %>
+  <% if @value %>
   value="<%= @value %>"
-  <%= 'autocomplete' if @autocomplete %>
+  <% end %>
+  <% if @autocomplete %>
+  autocomplete="<%= @autocomplete %>"
+  <% end %>
+  <%= 'disabled' if @disabled %>
   <%= 'formnovalidate' if @name == 'provider' %>
-  />
+    />

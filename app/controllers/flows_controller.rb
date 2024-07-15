@@ -68,6 +68,7 @@ class FlowsController < ApplicationController
                  .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
                  .post(action_url, :json => form_data)
     if response.status == 200
+      set_cookie(response)
       redirect_to root_path
     elsif response.status == 400
       redirect_to "/#{flow_type}?flow=#{response.parse["id"]}"
@@ -86,12 +87,22 @@ class FlowsController < ApplicationController
 
   def set_cookie(response)
     response_headers = response.headers
-    set_cookie = response_headers["Set-Cookie"]
-    split_cookie = set_cookie.split(";")
-    cookie_name = split_cookie[0].split("=")[0]
-    cookie_value = split_cookie[0].split("=")[1]
-    cookie_name_sym = cookie_name.to_sym
-    cookies[cookie_name_sym] = cookie_value
+    set_cookies = response_headers["Set-Cookie"]
+    return unless set_cookies
+    _set_cookies = []
+    if set_cookies.is_a?(String)
+      _set_cookies << set_cookies
+    else
+      _set_cookies = set_cookies
+    end
+
+    _set_cookies.each do |set_cookie|
+      cookie = set_cookie.split(";")
+      cookie_name = cookie[0].split("=")[0]
+      cookie_value = cookie[0].split("=")[1]
+      cookie_name_sym = cookie_name.to_sym
+      cookies[cookie_name_sym] = cookie_value
+    end
   end
 
   def get_ui_nodes(body)

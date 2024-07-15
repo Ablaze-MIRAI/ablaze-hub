@@ -7,6 +7,7 @@ class FlowsController < ApplicationController
 
   def registration_submit
     form_data = params
+    handle_submit(form_data, "registration", :registration)
   end
 
   def login
@@ -16,7 +17,7 @@ class FlowsController < ApplicationController
 
   def login_submit
     form_data = params
-    handle_submit(form_data, "login")
+    handle_submit(form_data, "login", :login)
   end
 
   def error
@@ -60,7 +61,7 @@ class FlowsController < ApplicationController
     redirect_to response.headers["Location"]
   end
 
-  def handle_submit(form_data, flow_type)
+  def handle_submit(form_data, flow_type, render_path)
     action_url = form_data["action_url"]
     response = HTTP
                  .headers("Content-Type" => "application/json")
@@ -74,7 +75,7 @@ class FlowsController < ApplicationController
       url = response.parse["redirect_browser_to"]
       set_cookie(response)
       @redirect_url = url
-      render :registration, status: 422
+      render render_path, :status => 422
     elsif response.status == 303
       redirect_to response.headers["Location"]
     else

@@ -14,7 +14,6 @@
 
 <input
   type='<%= @type %>'
-  <%= 'required' if @required %>
   aria-label="<%= @name %>"
   id="<%= helpers.get_random_id %>"
   name="<%= @name %>"
@@ -25,5 +24,4 @@
   autocomplete="<%= @autocomplete %>"
   <% end %>
   <%= 'disabled' if @disabled %>
-  <%= 'formnovalidate' if @name == 'provider' %>
     />

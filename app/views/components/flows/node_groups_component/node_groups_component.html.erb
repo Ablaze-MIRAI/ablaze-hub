@@ -1,6 +1,6 @@
 <% if @flow %>
    <% @flow.ui_messages.each do |message| %>
-     <p <%= 'class="text-destructive"' if message.type == "error" %>>
+     <p <%= 'class=text-destructive' if message.type == "error" %>>
        <%= message.text %>
      </p>
     <% end %>

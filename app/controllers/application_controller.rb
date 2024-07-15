@@ -10,6 +10,11 @@ class ApplicationController < ActionController::Base
 
     @sessions = []
     if session_response.status == 200
+      _sessions = session_response.parse
+      if _sessions.length == 0
+        cookies.delete("ory_kratos_session")
+        redirect_to "/"
+      end
       @sessions = session_response.parse.map do |session|
         SessionResponse.new(session)
       end

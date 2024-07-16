@@ -11,7 +11,11 @@ Rails.application.routes.draw do
 
   get "registration", to: "flows#registration"
   post "registration", to: "flows#registration_submit"
+
   get "login", to: "flows#login"
   post "login", to: "flows#login_submit"
+
   get "error", to: "flows#error"
+
+  get "whoami", to: "application#whoami"
 end

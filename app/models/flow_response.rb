@@ -75,7 +75,7 @@ class FlowResponse
     @nodes.each do |node|
       group = node.group
       if group
-        if group === "default" || group === "profile"
+        if group === "default" || group === "profile" || group == "password"
           group = "default"
         end
         node_groups[group] = [] unless node_groups[group]

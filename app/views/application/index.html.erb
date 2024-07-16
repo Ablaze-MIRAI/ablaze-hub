@@ -1,8 +1,19 @@
-
-
 <div class="flex flex-col justify-start h-screen">
+  <p>You have <%= @sessions.length %> sessions</p>
+  <p>You have <%= @sessions.select { |s| s.verified? }.length %> verified sessions</p>
+
   <%= render WelcomeComponent.new(title: "Welcome to Ablaze", description: "Happy to have you here!!") %>
 
-  <%= link_to "Register", registration_path, class: "underline mt-4"%>
-  <%= link_to "Login", login_path, class: "underline"%>
+  <% if @sessions.length > 0 %>
+    <%= link_to "Who am I", whoami_path, class: "underline my-2" %>
+  <% end %>
+
+  <%= link_to "Register", registration_path, class: "underline mt-4" %>
+  <%= link_to "Login", login_path, class: "underline" %>
+
+  <% if @raw_sessions %>
+  <pre>
+    <%= @raw_sessions %>
+  </pre>
+  <% end %>
 </div>

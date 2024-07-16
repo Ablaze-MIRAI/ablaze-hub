@@ -7,6 +7,7 @@ class FlowsController < ApplicationController
 
   def registration_submit
     form_data = params
+    handle_submit(form_data, "registration", :registration)
   end
 
   def login
@@ -16,7 +17,7 @@ class FlowsController < ApplicationController
 
   def login_submit
     form_data = params
-    handle_submit(form_data, "login")
+    handle_submit(form_data, "login", :login)
   end
 
   def error
@@ -60,13 +61,16 @@ class FlowsController < ApplicationController
     redirect_to response.headers["Location"]
   end
 
-  def handle_submit(form_data, flow_type)
+  def handle_submit(form_data, flow_type, render_path)
     action_url = form_data["action_url"]
     response = HTTP
                  .headers("Content-Type" => "application/json")
+                 .headers("X-Forwarded-For" => request.remote_ip)
+                 .headers("User-Agent" => request.user_agent)
                  .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
                  .post(action_url, :json => form_data)
     if response.status == 200
+      set_cookie(response)
       redirect_to root_path
     elsif response.status == 400
       redirect_to "/#{flow_type}?flow=#{response.parse["id"]}"
@@ -74,7 +78,7 @@ class FlowsController < ApplicationController
       url = response.parse["redirect_browser_to"]
       set_cookie(response)
       @redirect_url = url
-      render :registration, status: 422
+      render render_path, :status => 422
     elsif response.status == 303
       redirect_to response.headers["Location"]
     else
@@ -85,12 +89,22 @@ class FlowsController < ApplicationController
 
   def set_cookie(response)
     response_headers = response.headers
-    set_cookie = response_headers["Set-Cookie"]
-    split_cookie = set_cookie.split(";")
-    cookie_name = split_cookie[0].split("=")[0]
-    cookie_value = split_cookie[0].split("=")[1]
-    cookie_name_sym = cookie_name.to_sym
-    cookies[cookie_name_sym] = cookie_value
+    set_cookies = response_headers["Set-Cookie"]
+    return unless set_cookies
+    _set_cookies = []
+    if set_cookies.is_a?(String)
+      _set_cookies << set_cookies
+    else
+      _set_cookies = set_cookies
+    end
+
+    _set_cookies.each do |set_cookie|
+      cookie = set_cookie.split(";")
+      cookie_name = cookie[0].split("=")[0]
+      cookie_value = cookie[0].split("=")[1]
+      cookie_name_sym = cookie_name.to_sym
+      cookies[cookie_name_sym] = cookie_value
+    end
   end
 
   def get_ui_nodes(body)

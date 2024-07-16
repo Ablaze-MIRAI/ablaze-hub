@@ -23,7 +23,7 @@ class FlowsController < ApplicationController
   def error
     flow_id = params[:flow]
     full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{flow_id}"
-    response = fetch_content(full)
+    response = get(full)
     @flow_type = "registration"
     @error = JSON.pretty_generate(response.parse)
   end
@@ -34,7 +34,7 @@ class FlowsController < ApplicationController
     kratos_url = ENV['KRATOS_PUBLIC_URL']
     if flow_id
       full_url = "#{kratos_url}/self-service/#{flow_type}/flows?id=#{flow_id}"
-      response = fetch_content(full_url)
+      response = get(full_url)
       if response.status == 410
         @error = JSON.pretty_generate(response.parse)
         @flow_type = flow_type
@@ -56,19 +56,15 @@ class FlowsController < ApplicationController
     end
 
     full_url = "#{kratos_url}/self-service/#{flow_type}/browser?"
-    response = HTTP.get(full_url)
+    response = get(full_url)
     set_cookie(response)
-    redirect_to response.headers["Location"]
+    redirect = response.headers["Location"] || "/#{flow_type}?flow=#{response.parse["id"]}"
+    redirect_to redirect
   end
 
   def handle_submit(form_data, flow_type, render_path)
     action_url = form_data["action_url"]
-    response = HTTP
-                 .headers("Content-Type" => "application/json")
-                 .headers("X-Forwarded-For" => request.remote_ip)
-                 .headers("User-Agent" => request.user_agent)
-                 .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
-                 .post(action_url, :json => form_data)
+    response = post(action_url, form_data)
     if response.status == 200
       set_cookie(response)
       redirect_to root_path
@@ -111,10 +107,20 @@ class FlowsController < ApplicationController
     JSON.parse(body)["ui"]["nodes"]
   end
 
-  def fetch_content(url)
+  def get(url)
     cookie_string = cookies.map { |k, v| "#{k}=#{v}=" }.join("; ")
     HTTP.headers("Cookie" => cookie_string)
         .headers(:accept => "application/json")
         .get(url)
   end
+
+  def post(url, body)
+    HTTP
+      .headers("Content-Type" => "application/json")
+      .headers("X-Forwarded-For" => request.remote_ip)
+      .headers("User-Agent" => request.user_agent)
+      .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
+      .post(url, :json => body)
+  end
+
 end

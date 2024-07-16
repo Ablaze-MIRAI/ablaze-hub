@@ -65,6 +65,7 @@ class FlowsController < ApplicationController
     action_url = form_data["action_url"]
     response = HTTP
                  .headers("Content-Type" => "application/json")
+                 .headers("X-Forwarded-For" => request.remote_ip)
                  .headers("User-Agent" => request.user_agent)
                  .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
                  .post(action_url, :json => form_data)

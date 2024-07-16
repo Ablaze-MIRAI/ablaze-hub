@@ -11,17 +11,18 @@
 <% if @meta && @meta["label"] %>
   <label for="<%= @name %>"><%= @meta["label"]["text"] %></label>
 <% end %>
-
-<input
-  type='<%= @type %>'
-  aria-label="<%= @name %>"
-  id="<%= helpers.get_random_id %>"
-  name="<%= @name %>"
-  <% if @value %>
-  value="<%= @value %>"
-  <% end %>
-  <% if @autocomplete %>
-  autocomplete="<%= @autocomplete %>"
-  <% end %>
-  <%= 'disabled' if @disabled %>
-    />
+<% if @node_type == "input" %>
+  <input
+    type='<%= @type %>'
+    aria-label="<%= @name %>"
+    id="<%= helpers.get_random_id %>"
+    name="<%= @name %>"
+    <% if @value %>
+    value="<%= @value %>"
+    <% end %>
+    <% if @autocomplete %>
+    autocomplete="<%= @autocomplete %>"
+    <% end %>
+    <%= 'disabled' if @disabled %>
+      />
+<% end %>

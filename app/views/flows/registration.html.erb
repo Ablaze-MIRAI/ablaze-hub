@@ -3,6 +3,6 @@
 <div class="flex flex-col justify-start h-screen">
   <h2 class="text-3xl mb-6">Registration</h2>
   <% if @flow %>
-    <%= render Flows::NodeGroupsComponent.new(flow: @flow) %>
+    <%= render Flows::FlowComponent.new(flow: @flow, submit_path: @submit_path) %>
   <% end %>
 </div>

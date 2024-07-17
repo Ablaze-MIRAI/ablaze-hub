@@ -50,8 +50,8 @@ class FlowsController < ApplicationController
         redirect_to response.headers["Location"]
         return
       end
-
-      @flow = FlowResponse.new(response.parse, submit_path)
+      @submit_path = submit_path
+      @flow = response.parse
       return
     end
 

@@ -20,10 +20,10 @@ class FlowsController < ApplicationController
     handle_submit(form_data, "login", :login)
   end
 
-  def error
-    flow_id = params[:flow]
-    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{flow_id}"
-    response = fetch_content(full)
+  def errors
+    error_id = params[:id]
+    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{error_id}"
+    response = get(full)
     @flow_type = "registration"
     @error = JSON.pretty_generate(response.parse)
   end
@@ -34,11 +34,11 @@ class FlowsController < ApplicationController
     kratos_url = ENV['KRATOS_PUBLIC_URL']
     if flow_id
       full_url = "#{kratos_url}/self-service/#{flow_type}/flows?id=#{flow_id}"
-      response = fetch_content(full_url)
+      response = get(full_url)
       if response.status == 410
         @error = JSON.pretty_generate(response.parse)
         @flow_type = flow_type
-        render :error
+        render :errors
         return
       end
       if response.status == 400
@@ -50,25 +50,21 @@ class FlowsController < ApplicationController
         redirect_to response.headers["Location"]
         return
       end
-
-      @flow = FlowResponse.new(response.parse, submit_path)
+      @submit_path = submit_path
+      @flow = response.parse
       return
     end
 
     full_url = "#{kratos_url}/self-service/#{flow_type}/browser?"
-    response = HTTP.get(full_url)
+    response = get(full_url)
     set_cookie(response)
-    redirect_to response.headers["Location"]
+    redirect = response.headers["Location"] || "/#{flow_type}?flow=#{response.parse["id"]}"
+    redirect_to redirect
   end
 
   def handle_submit(form_data, flow_type, render_path)
     action_url = form_data["action_url"]
-    response = HTTP
-                 .headers("Content-Type" => "application/json")
-                 .headers("X-Forwarded-For" => request.remote_ip)
-                 .headers("User-Agent" => request.user_agent)
-                 .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}=" }.join("; "))
-                 .post(action_url, :json => form_data)
+    response = post(action_url, form_data)
     if response.status == 200
       set_cookie(response)
       redirect_to root_path
@@ -101,20 +97,53 @@ class FlowsController < ApplicationController
     _set_cookies.each do |set_cookie|
       cookie = set_cookie.split(";")
       cookie_name = cookie[0].split("=")[0]
-      cookie_value = cookie[0].split("=")[1]
+      cookie_value = cookie[0].split("=", 2)[1]
+      path = get_property_from_cookie(cookie, "Path")
+      max_age = get_property_from_cookie(cookie, "Max-Age")
+      max_age = max_age.to_i if max_age
+      http_only = get_property_from_cookie(cookie, "HttpOnly", true)
+      http_only = http_only != nil
+
+      cookie_options = {}
+      cookie_options[:path] = path if path
+      cookie_options[:max_age] = Time.now + max_age if max_age
+      cookie_options[:http_only] = http_only if http_only
+      cookie_options[:value] = cookie_value
       cookie_name_sym = cookie_name.to_sym
-      cookies[cookie_name_sym] = cookie_value
+      cookies[cookie_name_sym] = cookie_options
     end
+  end
+
+  def get_property_from_cookie(cookie, property, only_present = false)
+    cookie.each do |c|
+      if c.include?(property)
+        if only_present
+          return true
+        end
+        return c.split("=")[1]
+      end
+    end
+    nil
   end
 
   def get_ui_nodes(body)
     JSON.parse(body)["ui"]["nodes"]
   end
 
-  def fetch_content(url)
-    cookie_string = cookies.map { |k, v| "#{k}=#{v}=" }.join("; ")
+  def get(url)
+    cookie_string = cookies.map { |k, v| "#{k}=#{v}" }.join("; ")
     HTTP.headers("Cookie" => cookie_string)
         .headers(:accept => "application/json")
         .get(url)
   end
+
+  def post(url, body)
+    HTTP
+      .headers("Content-Type" => "application/json")
+      .headers("X-Forwarded-For" => request.remote_ip)
+      .headers("User-Agent" => request.user_agent)
+      .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}" }.join("; "))
+      .post(url, :json => body)
+  end
+
 end

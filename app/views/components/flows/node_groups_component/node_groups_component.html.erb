@@ -1,18 +1,15 @@
-<% if @flow %>
-   <% @flow.ui_messages.each do |message| %>
-     <p <%= 'class=text-destructive' if message.type == "error" %>>
-       <%= message.text %>
-     </p>
+<% if @nodes.present? && @nodes.length > 0 %>
+  <% if @title %>
+    <h3 class="text-2xl mb-6">
+      <%= @title %>
+    </h3>
+  <% end %>
+  <%= form_with url: @submit_path || @action_url, html: {class: @classes}, method: @method do |f| %>
+    <% if @submit_path != @action_url && @action_url.present? %>
+      <%= hidden_field_tag :action_url, @action_url %>
     <% end %>
-
-  <%= form_with url: @flow.submit_path, method: @flow.method do || %>
-    <% if @flow.submit_path != @flow.action %>
-      <%= hidden_field_tag :action_url, @flow.action %>
-    <% end %>
-    <% @flow.nodes.each do |node| %>
-      <% if node.node_type == "input" %>
-        <%= render Flows::UiNodeComponent.new(node) %>
-      <% end %>
+    <% @nodes.each do |node| %>
+      <%= render node %>
     <% end %>
   <% end %>
 <% end %>

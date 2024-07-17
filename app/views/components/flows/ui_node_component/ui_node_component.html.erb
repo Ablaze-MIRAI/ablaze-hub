@@ -1,4 +1,4 @@
-<% if @messages.length > 0 %>
+<% if has_messages? %>
   <div>
     <% @messages.each do |message| %>
       <p <%= "class=text-destructive" if message.type == "error" %>>
@@ -8,21 +8,30 @@
   </div>
 <% end %>
 
-<% if @meta && @meta["label"] %>
-  <label for="<%= @name %>"><%= @meta["label"]["text"] %></label>
-<% end %>
-<% if @node_type == "input" %>
+<% if is_button? %>
+  <button
+    class="btn-primary"
+    type='<%= get_type %>'
+    id="<%= @id %>"
+    name="<%= get_name %>"
+    <% @attributes && @attributes.each do |attr| %>
+    <%= get_attr(attr) %>
+    <% end %>
+    >
+    <% if has_label? %>
+      <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>
+    <% end %>
+  </button>
+<% else %>
+  <% if has_label? %>
+    <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>
+  <% end %>
   <input
-    type='<%= @type %>'
-    aria-label="<%= @name %>"
-    id="<%= helpers.get_random_id %>"
-    name="<%= @name %>"
-    <% if @value %>
-    value="<%= @value %>"
+    type='<%= get_type %>'
+    id="<%= @id %>"
+    name="<%= get_name %>"
+    <% @attributes && @attributes.each do |attr| %>
+    <%= get_attr(attr) %>
     <% end %>
-    <% if @autocomplete %>
-    autocomplete="<%= @autocomplete %>"
-    <% end %>
-    <%= 'disabled' if @disabled %>
       />
 <% end %>

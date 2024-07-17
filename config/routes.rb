@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get "login", to: "flows#login"
   post "login", to: "flows#login_submit"
 
-  get "error", to: "flows#error"
+  get "errors", to: "flows#errors"
 
   get "whoami", to: "application#whoami"
 end

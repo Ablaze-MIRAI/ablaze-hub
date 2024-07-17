@@ -20,9 +20,9 @@ class FlowsController < ApplicationController
     handle_submit(form_data, "login", :login)
   end
 
-  def error
-    flow_id = params[:flow]
-    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{flow_id}"
+  def errors
+    error_id = params[:id]
+    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{error_id}"
     response = get(full)
     @flow_type = "registration"
     @error = JSON.pretty_generate(response.parse)
@@ -38,7 +38,7 @@ class FlowsController < ApplicationController
       if response.status == 410
         @error = JSON.pretty_generate(response.parse)
         @flow_type = flow_type
-        render :error
+        render :errors
         return
       end
       if response.status == 400
@@ -108,7 +108,7 @@ class FlowsController < ApplicationController
   end
 
   def get(url)
-    cookie_string = cookies.map { |k, v| "#{k}=#{v}=" }.join("; ")
+    cookie_string = cookies.map { |k, v| "#{k}=#{v}" }.join("; ")
     HTTP.headers("Cookie" => cookie_string)
         .headers(:accept => "application/json")
         .get(url)

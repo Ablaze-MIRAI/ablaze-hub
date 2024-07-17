@@ -1,4 +1,4 @@
-<% @ui_messages.each do |message| %>
+<% @ui_messages && @ui_messages.each do |message| %>
   <p <%= 'class=text-destructive' if message.type == "error" %>>
     <%= message.text %>
   </p>

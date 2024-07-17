@@ -30,6 +30,10 @@ class Flows::FlowComponent < ViewComponent::Base
   # @param [Array] groups - Array of strings representing the group names
   # @return [Array] - Array of Node objects
   def filter_only(groups)
+    unless @is_active
+      return
+    end
+
     @nodes.select do |node|
       groups.include?(node.group)
     end
@@ -40,6 +44,10 @@ class Flows::FlowComponent < ViewComponent::Base
   # @param [Array] groups - Array of strings representing the group names
   # @return [Array] - Array of Node objects
   def filter_out(groups)
+    unless @is_active
+      return []
+    end
+
     @nodes.reject do |node|
       groups.include?(node.group)
     end
@@ -60,15 +68,15 @@ class Flows::FlowComponent < ViewComponent::Base
 
   def validate_flow(flow)
     if flow.nil?
-      false
+      return false
     end
 
-    if flow["ui"].nil?
-      false
+    unless flow["ui"]
+      return false
     end
 
-    if flow["ui"]["nodes"].nil?
-      false
+    unless flow["ui"]["action"]
+      return false
     end
     true
   end

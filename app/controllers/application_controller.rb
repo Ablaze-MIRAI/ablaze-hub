@@ -41,6 +41,6 @@ class ApplicationController < ActionController::Base
   end
 
   def get_cookie_str
-    cookies.map { |k, v| "#{k}=#{v}=" }.join("; ")
+    cookies.map { |k, v| "#{k}=#{v}" }.join("; ")
   end
 end

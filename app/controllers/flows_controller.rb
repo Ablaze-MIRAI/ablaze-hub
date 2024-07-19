@@ -1,4 +1,6 @@
 class FlowsController < ApplicationController
+  skip_before_action :authenticate_user!
+  skip_before_action :get_user_identity
 
   def registration
     flow_id = params[:flow]
@@ -151,7 +153,7 @@ class FlowsController < ApplicationController
 
       cookie_options = {}
       cookie_options[:path] = path if path
-      cookie_options[:max_age] = Time.now + max_age if max_age
+      cookie_options[:expires] = Time.now + max_age if max_age
       cookie_options[:http_only] = http_only if http_only
       cookie_options[:value] = cookie_value
       cookie_name_sym = cookie_name.to_sym

@@ -22,6 +22,13 @@
       <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>
     <% end %>
   </button>
+<% elsif is_script? %>
+    <script
+      <% @attributes && @attributes.each do |attr| %>
+          <%= get_attr(attr) %>
+      <% end %>
+  >
+  </script>
 <% else %>
   <% if has_label? %>
     <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>

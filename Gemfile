@@ -12,6 +12,7 @@ gem "http"
 gem "jbuilder"
 gem 'dotenv', groups: [:development, :test]
 gem "json"
+gem 'net-pop', '~> 0.1.2'
 
 gem "view_component"
 gem 'rack-cors', require: 'rack/cors'

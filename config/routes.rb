@@ -1,17 +1,14 @@
 Rails.application.routes.draw do
+  get 'settings', to: 'settings#index'
   get 'settings/profile'
+  put 'settings/profile', to: 'settings#update_profile'
   get 'settings/admin'
   get 'settings/appearance'
   get 'settings/sessions'
   get 'settings/security'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
   root "application#index"
 
   # User Flows
@@ -25,6 +22,4 @@ Rails.application.routes.draw do
   post "recovery", to: "flows#recovery_submit"
   get "verification", to: "flows#verification"
   post "verification", to: "flows#verification_submit"
-
-  get "whoami", to: "application#whoami"
 end

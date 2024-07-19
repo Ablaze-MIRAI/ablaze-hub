@@ -58,12 +58,17 @@ class Flows::UiNodeComponent < ViewComponent::Base
   end
 
   def is_script?
+    if @attributes
+      _type = @attributes["node_type"]
 
+      _type == "script" || @type == "script"
+    end
   end
 
   def is_link?
 
   end
+
 
   ##
   # @param attribute - A key value pair
@@ -72,6 +77,10 @@ class Flows::UiNodeComponent < ViewComponent::Base
 
     if is_b?(value)
       return true?(value) ? "#{key}" : nil
+    end
+
+  if value.nil? || value.empty?
+    return nil
     end
 
     "#{key}=#{value}"

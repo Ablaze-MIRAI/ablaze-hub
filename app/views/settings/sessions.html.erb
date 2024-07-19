@@ -1,0 +1,29 @@
+<div>
+  <h2 class="text-3xl">Sessions</h2>
+  <div>
+    <% @sessions.each do |session| %>
+      <% device = session["devices"].first %>
+
+      <div class="flex flex-col space-y-4">
+        <div>
+          <div>
+            <span class="font-bold">IP Address:</span>
+            <%= device["ip_address"] %>
+          </div>
+          <div>
+            <span class="font-bold">User Agent:</span>
+            <%= device["user_agent"] %>
+          </div>
+          <div>
+            <span class="font-bold">Location:</span>
+            <%= device["location"] %>
+          </div>
+          <div>
+            <span class="font-bold">Last Active:</span>
+            <%= time_ago_in_words(session["authenticated_at"]) %> ago
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

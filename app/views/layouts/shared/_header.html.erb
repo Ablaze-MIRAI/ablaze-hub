@@ -3,7 +3,6 @@
   <%= render 'layouts/shared/theme-toggle' %>
   <div data-turbo-prefetch="false">
     <% if is_logged_in? %>
-      <%= link_to "Who am I", whoami_path, class: "underline my-2" %>
       <a href="<%= @logout_url %>">Logout</a>
     <% else %>
       <%= link_to "Register", registration_path, class: "underline mt-4" %>

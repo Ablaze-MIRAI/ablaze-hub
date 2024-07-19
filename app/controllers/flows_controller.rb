@@ -12,7 +12,14 @@ class FlowsController < ApplicationController
 
   def login
     flow_id = params[:flow]
-    fetch_flow(flow_id, "login", login_path)
+    _params = {
+    }
+    _params[:return_to] = params[:return_to] if params[:return_to]
+    _params[:refresh] = params[:refresh] if params[:refresh]
+    _params[:via] = params[:via] if params[:via]
+    _params[:login_challenge] = params[:login_challenge] if params[:login_challenge]
+    _params[:aal] = params[:aal] if params[:aal]
+    fetch_flow(flow_id, "login", login_path, _params)
   end
 
   def login_submit
@@ -20,21 +27,43 @@ class FlowsController < ApplicationController
     handle_submit(form_data, "login", :login)
   end
 
+  def logout
+    token = params[:token]
+    return_to = params[:return_to] || root_url
+
+    if token.nil? || cookies[:ory_kratos_session].nil?
+      redirect_to return_to
+      return
+    end
+
+    full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/logout?token=#{token}&return_to=#{return_to}"
+    response = helpers.get(full)
+    if response.status == 204
+      cookies.delete :ory_kratos_session
+    elsif response.status == 401
+      if cookies[:ory_kratos_session]
+        cookies.delete :ory_kratos_session
+      end
+    end
+
+    redirect_to return_to
+  end
+
   def errors
     error_id = params[:id]
     full = "#{ENV['KRATOS_PUBLIC_URL']}/self-service/errors?id=#{error_id}"
-    response = get(full)
+    response = helpers.get(full)
     @flow_type = "registration"
     @error = JSON.pretty_generate(response.parse)
   end
 
   private
 
-  def fetch_flow(flow_id, flow_type, submit_path = nil)
+  def fetch_flow(flow_id, flow_type, submit_path, query_params = nil)
     kratos_url = ENV['KRATOS_PUBLIC_URL']
     if flow_id
       full_url = "#{kratos_url}/self-service/#{flow_type}/flows?id=#{flow_id}"
-      response = get(full_url)
+      response = helpers.get(full_url)
       if response.status == 410
         @error = JSON.pretty_generate(response.parse)
         @flow_type = flow_type
@@ -55,19 +84,35 @@ class FlowsController < ApplicationController
       return
     end
 
-    full_url = "#{kratos_url}/self-service/#{flow_type}/browser?"
-    response = get(full_url)
+    full_url = "#{kratos_url}/self-service/#{flow_type}/browser?#{get_query_params(query_params)}"
+    response = helpers.get(full_url)
     set_cookie(response)
     redirect = response.headers["Location"] || "/#{flow_type}?flow=#{response.parse["id"]}"
     redirect_to redirect
   end
 
+  def get_query_params(params)
+    if params.nil?
+      return ""
+    end
+    query_params = ""
+    params.each do |key, value|
+      query_params += "#{key}=#{value}&"
+    end
+    query_params[0..-2]
+  end
+
   def handle_submit(form_data, flow_type, render_path)
+    kratos_url = ENV['KRATOS_PUBLIC_URL']
     action_url = form_data["action_url"]
-    response = post(action_url, form_data)
+    flow_id = action_url.split("/").last.split("?").last.split("=").last
+    full_url = "#{kratos_url}/self-service/#{flow_type}/flows?id=#{flow_id}"
+    flow_res = helpers.get(full_url)
+    response = helpers.post(action_url, form_data)
     if response.status == 200
       set_cookie(response)
-      redirect_to root_path
+      return_to = flow_res.parse["return_to"] || root_url
+      redirect_to return_to
     elsif response.status == 400
       redirect_to "/#{flow_type}?flow=#{response.parse["id"]}"
     elsif response.status == 422
@@ -129,21 +174,4 @@ class FlowsController < ApplicationController
   def get_ui_nodes(body)
     JSON.parse(body)["ui"]["nodes"]
   end
-
-  def get(url)
-    cookie_string = cookies.map { |k, v| "#{k}=#{v}" }.join("; ")
-    HTTP.headers("Cookie" => cookie_string)
-        .headers(:accept => "application/json")
-        .get(url)
-  end
-
-  def post(url, body)
-    HTTP
-      .headers("Content-Type" => "application/json")
-      .headers("X-Forwarded-For" => request.remote_ip)
-      .headers("User-Agent" => request.user_agent)
-      .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}" }.join("; "))
-      .post(url, :json => body)
-  end
-
 end

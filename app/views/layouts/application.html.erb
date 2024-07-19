@@ -30,7 +30,7 @@
 <body>
 <%= render 'layouts/shared/header' %>
 <main class="container mx-auto p-5 flex">
-  <%= yield %>
+  <%= content_for?(:content) ? yield(:content) : yield %>
 </main>
 </body>
 </html>

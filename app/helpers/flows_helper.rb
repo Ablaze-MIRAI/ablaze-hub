@@ -33,6 +33,60 @@ module FlowsHelper
     false
   end
 
+  def get_query_params(params)
+    if params.nil?
+      return ""
+    end
+    query_params = ""
+    params.each do |key, value|
+      query_params += "#{key}=#{value}&"
+    end
+    query_params[0..-2]
+  end
+
+  def set_cookie(response)
+    response_headers = response.headers
+    set_cookies = response_headers["Set-Cookie"]
+    return unless set_cookies
+    _set_cookies = []
+    if set_cookies.is_a?(String)
+      _set_cookies << set_cookies
+    else
+      _set_cookies = set_cookies
+    end
+
+    _set_cookies.each do |set_cookie|
+      cookie = set_cookie.split(";")
+      cookie_name = cookie[0].split("=")[0]
+      cookie_value = cookie[0].split("=", 2)[1]
+      path = get_property_from_cookie(cookie, "Path")
+      max_age = get_property_from_cookie(cookie, "Max-Age")
+      max_age = max_age.to_i if max_age
+      http_only = get_property_from_cookie(cookie, "HttpOnly", true)
+      http_only = http_only != nil
+
+      cookie_options = {}
+      cookie_options[:path] = path if path
+      cookie_options[:expires] = Time.now + max_age if max_age
+      cookie_options[:http_only] = http_only if http_only
+      cookie_options[:value] = cookie_value
+      cookie_name_sym = cookie_name.to_sym
+      cookies[cookie_name_sym] = cookie_options
+    end
+  end
+
+  def get_property_from_cookie(cookie, property, only_present = false)
+    cookie.each do |c|
+      if c.include?(property)
+        if only_present
+          return true
+        end
+        return c.split("=")[1]
+      end
+    end
+    nil
+  end
+
   private
 
   def get_cookie_str

@@ -243,8 +243,8 @@ GEM
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
-      websocket (~> 1.0)
       tailwind_merge (~> 0.7)
+      websocket (~> 1.0)
     sorbet (0.5.11481)
       sorbet-static (= 0.5.11481)
     sorbet-runtime (0.5.11481)
@@ -325,6 +325,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   json
+  mini_magick (~> 4.11)
   net-pop (~> 0.1.2)
   puma (>= 5.0)
   rack-cors
@@ -335,6 +336,7 @@ DEPENDENCIES
   sprockets-rails
   sqlite3 (~> 1.4)
   stimulus-rails
+  tailwind_merge
   tailwindcss-rails (~> 2.6)
   turbo-rails
   tzinfo-data

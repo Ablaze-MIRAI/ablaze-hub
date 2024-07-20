@@ -18,6 +18,8 @@ gem 'net-pop', '~> 0.1.2'
 gem "view_component"
 gem 'rack-cors', require: 'rack/cors'
 gem 'image_processing', '~> 1.2'
+gem 'mini_magick', '~> 4.11'
+gem 'tailwind_merge'
 gem "tailwindcss-rails", "~> 2.6"
 
 # Use Redis adapter to run Action Cable in production

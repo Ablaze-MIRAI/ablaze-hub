@@ -18,6 +18,7 @@ gem 'net-pop', '~> 0.1.2'
 gem "view_component"
 gem 'rack-cors', require: 'rack/cors'
 gem 'image_processing', '~> 1.2'
+gem "tailwindcss-rails", "~> 2.6"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
@@ -58,7 +59,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "tailwindcss-rails", "~> 2.6"
-
-gem "shadcn-ui", "~> 0.0.13"

@@ -30,3 +30,5 @@ module Tools
     config.eager_load_paths << Rails.root.join("app/views/components")
   end
 end
+
+require "view_component"

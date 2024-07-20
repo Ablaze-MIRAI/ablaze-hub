@@ -6,6 +6,8 @@ class SettingsController < ApplicationController
   end
 
   def profile
+    avatar = @user.avatar.variant(resize_to_limit: [100, 100])
+    @avatar_url = Rails.application.routes.url_helpers.rails_representation_url(avatar, only_path: true)
   end
 
   def update_profile

@@ -1,4 +1,7 @@
 module ApplicationHelper
+
+  ##
+  # Performs a GET request while passing the cookies
   def get(url)
     cookie_string = cookies.map { |k, v| "#{k}=#{v}" }.join("; ")
     HTTP.headers("Cookie" => cookie_string)
@@ -6,6 +9,8 @@ module ApplicationHelper
         .get(url)
   end
 
+  ##
+  # Performs a POST request with the given body while passing the cookies
   def post(url, body)
     HTTP
       .headers("Content-Type" => "application/json")
@@ -14,6 +19,47 @@ module ApplicationHelper
       .headers("Cookie" => cookies.map { |k, v| "#{k}=#{v}" }.join("; "))
       .post(url, :json => body)
   end
+
+  ##
+  # Gets a random url for dicebear avatar
+  def get_avatar_url
+    scale = rand(70..139)
+    background = lambda do
+      colors = %w[b6e3f4 c0aede d1d4f9 ffd5dc ffdfbf ecad80]
+      colors.sample
+    end
+    eyebrows = get_variant(1, 15)
+    eyes = get_variant(1, 26)
+    glasses = get_variant(1, 5)
+    glasses_probability = rand(100)
+    mouth = get_variant(1, 30, [13, 11, 6])
+    url = "https://api.dicebear.com/8.x/adventurer-neutral/svg?"
+    params = {
+      scale: scale,
+      backgroundColor: background.call,
+      eyebrows: eyebrows,
+      eyes: eyes,
+      mouth: mouth,
+      glasses: glasses,
+      glassesProbability: glasses_probability
+    }
+    url = append_params(url, params)
+    url
+  end
+
+  ##
+  # Renders an ApplicationComponent
+  def render_component(component_path, collection: nil, **options, &block)
+    component_klass = "#{component_path.classify}Component".constantize
+
+    if collection
+      render component_klass.with_collection(collection, **options), &block
+    else
+      render component_klass.new(**options), &block
+    end
+  end
+
+  private
 
   def get_variant_core(min, max, excluded = [])
     variant = rand(min..max)
@@ -39,29 +85,6 @@ module ApplicationHelper
     end
     url
   end
-
-  def get_avatar_url
-    scale = rand(70..139)
-    background = lambda do
-      colors = %w[b6e3f4 c0aede d1d4f9 ffd5dc ffdfbf ecad80]
-      colors.sample
-    end
-    eyebrows = get_variant(1, 15)
-    eyes = get_variant(1, 26)
-    glasses = get_variant(1, 5)
-    glasses_probability = rand(100)
-    mouth = get_variant(1, 30, [13, 11, 6])
-    url = "https://api.dicebear.com/8.x/adventurer-neutral/svg?"
-    params = {
-      scale: scale,
-      backgroundColor: background.call,
-      eyebrows: eyebrows,
-      eyes: eyes,
-      mouth: mouth,
-      glasses: glasses,
-      glassesProbability: glasses_probability
-    }
-    url = append_params(url, params)
-    url
-  end
 end
+
+

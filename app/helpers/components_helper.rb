@@ -1,4 +1,4 @@
-require "tailwind_merge"
+require "tailwindcss/engine"
 
 module ComponentsHelper
   def tw(*classes)

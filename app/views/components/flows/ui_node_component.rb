@@ -12,8 +12,8 @@ class Message
   end
 end
 
-class Flows::UiNodeComponent < ViewComponent::Base
-  attr_reader :node, :meta, :attributes, :type, :group, :messages
+class Flows::UiNodeComponent < ApplicationComponent
+  renders_one :node
 
   def initialize(node)
     @id = get_random_id

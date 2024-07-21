@@ -7,6 +7,14 @@ class ApplicationComponent < ViewComponent::Base
     @tag = tag
     @classes = classes
     @options = options
+    @force_self_closing = options.delete(:force_self_closing)
+  end
+
+  def self_closing?(tag = @tag)
+    if @tag.is_a?(String)
+      @tag = @tag.to_sym
+    end
+    SELF_CLOSING_TAGS.include?(@tag)
   end
 
   def merge_attributes(*args)
@@ -19,7 +27,7 @@ class ApplicationComponent < ViewComponent::Base
   end
 
   def call
-    if SELF_CLOSING_TAGS.include?(@tag)
+    if self_closing? || @force_self_closing
       tag(@tag, merge_attributes(@options, class: @classes))
     else
       content_tag(@tag, content, merge_attributes(@options, class: @classes))

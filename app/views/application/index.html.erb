@@ -1,0 +1,12 @@
+<%= render ApplicationComponent.new tag: "h1", classes: "text-4xl" do %>
+  Hello, world!
+<% end %>
+
+<%= render SubheadComponent.new do |c| %>
+  <% c.with_header classes: "text-red-700", options: { "data-controller": "hello" } do %>
+    Welcome to the application!
+  <% end %>
+  <% c.with_description do %>
+    This is a simple example of how to use components in Rails.
+  <% end %>
+<% end %>

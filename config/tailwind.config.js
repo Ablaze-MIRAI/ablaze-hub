@@ -6,8 +6,8 @@ module.exports = {
     "./public/*.html",
     "./app/helpers/**/*.rb",
     "./app/javascript/**/*.js",
-    "./app/views/**/*.{erb,haml,html,slim}",
-    "./app/views/components/**/*.{erb,haml,html,slim}",
+    "./app/views/**/*.{erb,haml,html,slim,rb}",
+    "./app/views/components/**/*.{erb,haml,html,slim,rb}",
   ],
   theme: {
     fontFamily: {

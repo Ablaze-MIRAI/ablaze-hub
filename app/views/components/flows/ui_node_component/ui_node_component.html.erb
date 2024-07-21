@@ -8,37 +8,11 @@
   </div>
 <% end %>
 
-<% if is_button? %>
-  <button
-    class="btn-primary"
-    type='<%= get_type %>'
-    id="<%= @id %>"
-    name="<%= get_name %>"
-    <% @attributes && @attributes.each do |attr| %>
-    <%= get_attr(attr) %>
-    <% end %>
-    >
-    <% if has_label? %>
-      <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>
-    <% end %>
-  </button>
-<% elsif is_script? %>
-    <script
-      <% @attributes && @attributes.each do |attr| %>
-          <%= get_attr(attr) %>
-      <% end %>
-  >
-  </script>
+<% if self.self_closing?(@tag) %>
+  <%= node_label %>
+  <%= render ApplicationComponent.new(**@options) %>
 <% else %>
-  <% if has_label? %>
-    <label for="<%= get_name %>"><%= @meta["label"]["text"] %></label>
+  <%= render ApplicationComponent.new(**@options) do %>
+    <%= node_label %>
   <% end %>
-  <input
-    type='<%= get_type %>'
-    id="<%= @id %>"
-    name="<%= get_name %>"
-    <% @attributes && @attributes.each do |attr| %>
-    <%= get_attr(attr) %>
-    <% end %>
-      />
 <% end %>

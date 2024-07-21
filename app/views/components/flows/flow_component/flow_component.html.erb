@@ -1,9 +1,5 @@
-<% @ui_messages && @ui_messages.each do |message| %>
-  <p <%= 'class=text-destructive' if message.type == "error" %>>
-    <%= message.text %>
-  </p>
+<%= render ApplicationComponent.new(**@options) do %>
+  <% items.each do |item| %>
+    <%= item %>
+  <% end %>
 <% end %>
-
-<%= render get_group(filter_out(["oidc"])) %>
-
-<%= render get_group(filter_only(["oidc"]), classes: "flex flex-col gap-2 mt-2") %>

@@ -1,21 +1,29 @@
 # frozen_string_literal: true
 
-class Flows::NodeGroupsComponent < ViewComponent::Base
-  renders_many :nodes, "node"
-  renders_one :title
-  def initialize(
-    nodes,
-    method,
-    action_url,
-    submit_path: nil,
-    classes: nil,
-    title: nil
-  )
-    @nodes = nodes
-    @submit_path = submit_path
-    @method = method
-    @action_url = action_url
-    @classes = classes
-    @title = title
+module Flows
+  class NodeGroupsComponent < ApplicationComponent
+    attr_reader :nodes, :options
+
+    def initialize(nodes:, **options)
+      @options = options
+      @options[:tag] ||= :form
+      @method = @options[:method] || "post"
+      @submit = @options[:submit] || nil
+      @action = @options[:action] || nil
+      if @action == nil
+        raise "The action attribute is required for the NodeGroupsComponent"
+      end
+
+      if @submit != @action
+        @action_url = ApplicationComponent.new(tag: :input, type: :hidden, name: :action_url, value: @action)
+      end
+
+      @options[:action] = @options.delete(:submit) || @action
+      @nodes = []
+      nodes.each do |n|
+        node = UiNodeComponent.new(n)
+        @nodes << node
+      end
+    end
   end
 end

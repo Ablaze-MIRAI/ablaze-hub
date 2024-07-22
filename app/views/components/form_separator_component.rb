@@ -2,7 +2,7 @@
 
 class FormSeparatorComponent < ApplicationComponent
   def call
-    content_tag(:div, class: "relative") do
+    content_tag(:div, class: "relative my-2") do
       concat(separator_line)
       concat(separator_text)
     end

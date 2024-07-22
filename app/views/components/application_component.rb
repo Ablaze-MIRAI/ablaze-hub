@@ -7,6 +7,7 @@ class ApplicationComponent < ViewComponent::Base
     @tag = tag
     @classes = classes
     @options = options
+    @string = options.delete(:string) || nil
     @force_self_closing = options.delete(:force_self_closing)
   end
 
@@ -30,7 +31,7 @@ class ApplicationComponent < ViewComponent::Base
     if self_closing? || @force_self_closing
       tag(@tag, merge_attributes(@options, class: @classes))
     else
-      content_tag(@tag, content, merge_attributes(@options, class: @classes))
+      content_tag(@tag, @string || content, merge_attributes(@options, class: @classes))
     end
   end
 end

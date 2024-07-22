@@ -10,7 +10,12 @@ module Flows
         as: :group
       },
       divider: {
-        renders: ->(**options) { FormSeparatorComponent.new(**options) },
+        renders: ->(**options) {
+          if options[:show_condition] == false
+            return
+          end
+          FormSeparatorComponent.new(**options)
+        },
         as: :divider
       }
     }
@@ -20,7 +25,7 @@ module Flows
     def initialize(**options)
       @options = options
       @options[:tag] ||= :div
-      @options[:classes] = class_names("space-y-4 border border-gray-300 dark:border-gray-700 p-4 rounded-md", @options[:classes])
+      @options[:classes] = class_names("border border-gray-300 dark:border-gray-700 p-4 rounded-md", @options[:classes])
       @ui_messages = []
     end
 

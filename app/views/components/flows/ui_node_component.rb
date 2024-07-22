@@ -2,23 +2,9 @@
 
 module Flows
   class UiNodeComponent < ApplicationComponent
+    BOOLEAN_ATTRIBUTES = %w[disabled readonly multiple checked required autofocus].freeze
+
     attr_reader :group, :id
-
-    renders_one :node_label, -> (**options) do
-      unless @meta.present? && @meta["label"].present?
-        return
-      end
-
-      unless self_closing?
-        return @meta["label"]["text"]
-      end
-
-      options[:tag] ||= :span
-      options[:classes] = class_names("text-sm font-bold", options[:classes])
-      ApplicationComponent.new(**options)
-    end
-
-    renders_many :messages
 
     class Message
       attr_reader :id, :text, :type
@@ -46,17 +32,14 @@ module Flows
       @options[:tag] ||= @tag
       @options[:name] = get_name
       @options[:id] = @id
-      @options[:classes] = class_names(@options[:classes]) if @options[:classes].present?
+      @options[:classes] = class_names(get_classes, "my-2", @options[:classes])
       @attributes.each do |key, value|
         if key == "node_type"
           next
         end
         @options[key.to_sym] = value
       end
-    end
-
-    def has_label?
-      @meta["label"].present?
+      @label = get_label
     end
 
     def has_messages?
@@ -68,27 +51,40 @@ module Flows
     end
 
     def get_tag
-      @type || @attributes["node_type"]
+      _type = @type || @attributes["node_type"]
+      if @attributes["type"].present? && @attributes["type"] == "submit" || @attributes["type"] == "button"
+        return :button
+      end
+      _type
     end
 
-    ##
-    # @param attribute - A key value pair
-    def get_attr(attribute)
-      key, value = attribute
+    def get_classes
+      case @tag
+      when :button
+        return "btn primary w-full"
+      when "input"
+      when "textarea"
+      when "select"
+      else
+        return ""
+      end
+    end
 
-      if is_b?(value)
-        return true?(value) ? "#{key}" : nil
+    def get_label(**options)
+      unless @meta.present? && @meta["label"].present?
+        return
       end
 
-      if value.nil? || value.empty?
-        return nil
+      unless self_closing?
+        return @meta["label"]["text"]
       end
 
-      "#{key}=#{value}"
+      options[:tag] ||= :p
+      options[:classes] = class_names("text-sm font-bold", options[:classes])
+      ApplicationComponent.new(string: @meta["label"]["text"], **options)
     end
   end
 end
-
 
 def is_b?(obj)
   true?(obj) || false?(obj)

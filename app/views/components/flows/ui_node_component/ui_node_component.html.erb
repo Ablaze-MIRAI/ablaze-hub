@@ -9,10 +9,10 @@
 <% end %>
 
 <% if self.self_closing?(@tag) %>
-  <%= node_label %>
+  <%= render @label if @label %>
   <%= render ApplicationComponent.new(**@options) %>
 <% else %>
   <%= render ApplicationComponent.new(**@options) do %>
-    <%= node_label %>
+    <%= @label if @label %>
   <% end %>
 <% end %>

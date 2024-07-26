@@ -87,6 +87,37 @@ module FlowsHelper
     nil
   end
 
+
+  ##
+  # Returns a boolean value if the flow has a back node. It has back node if the value of a node has a `something:back` value
+  def has_back_node?(flow)
+    get_back_node(flow).present?
+  end
+
+  ##
+  # Returns a node if the flow has a back node. It has back node if the value of a node has a `something:back` value
+  # @param [Hash] flow The flow object
+  def get_back_node(flow)
+    flow["ui"]["nodes"].each do |node|
+      if is_back_node?(node)
+        return node
+      end
+    end
+    nil
+  end
+
+  def is_back_node?(node)
+    if node["attributes"].nil? || node["attributes"]["value"].nil?
+      return false
+    end
+
+    if node["attributes"]["value"].end_with?(":back")
+      return true
+    end
+
+    false
+  end
+
   private
 
   def get_cookie_str

@@ -1,10 +1,12 @@
-<%= render ApplicationComponent.new(**@options) do %>
-  <% messages.each do |message| %>
-    <p <%= "class=text-destructive" if message["type"] == "error" %>>
-      <%= message["text"] %>
-    </p>
-  <% end %>
-  <% items.each do |item| %>
-    <%= item %>
+<% if @show %>
+  <%= render ApplicationComponent.new(**@options) do %>
+    <% messages.each do |message| %>
+      <p <%= "class=text-destructive" if message["type"] == "error" %>>
+        <%= message["text"] %>
+      </p>
+    <% end %>
+    <% items.each do |item| %>
+      <%= item %>
+    <% end %>
   <% end %>
 <% end %>

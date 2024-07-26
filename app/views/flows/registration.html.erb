@@ -4,9 +4,12 @@
   <h2 class="text-3xl mb-6">Registration</h2>
   <% if @flow %>
     <%= render Flows::FlowComponent.new do |flow| %>
-      <% flow.with_group(@flow, filter_out: "oidc", submit: @submit_path) %>
-      <% flow.with_divider %>
+      <% flow.with_group(@flow, filter_out: %w[oidc passkey], submit: @submit_path) %>
+      <% flow.with_divider(show_condition: flow.filter_only("passkey", @flow["ui"]["nodes"]).any?) %>
+      <% flow.with_group(@flow, filter_only: "passkey", submit: @submit_path) %>
+      <% flow.with_divider(show_condition: flow.filter_only("oidc", @flow["ui"]["nodes"]).any?) %>
       <% flow.with_group(@flow, filter_only: "oidc", submit: @submit_path, classes: OIDC_CLASSES) %>
+      <% flow.with_back(@flow) %>
     <% end %>
   <% end %>
 </div>

@@ -2,6 +2,8 @@
 
 module Flows
   class UiNodeComponent < ApplicationComponent
+    include FlowsHelper
+
     BOOLEAN_ATTRIBUTES = %w[disabled readonly multiple checked required autofocus].freeze
 
     attr_reader :group, :id
@@ -22,6 +24,7 @@ module Flows
       @meta = node["meta"]
       @group = node["group"]
       @attributes = node["attributes"]
+      is_back_button = is_back_node?(node)
 
       @messages = node["messages"].map do |message|
         Message.new(message)
@@ -32,6 +35,7 @@ module Flows
       @options[:tag] ||= @tag
       @options[:name] = get_name
       @options[:id] = @id
+      @options[:formnovalidate] = true if is_back_button
       @options[:classes] = class_names(get_classes, "my-2", @options[:classes])
       @attributes.each do |key, value|
         if key == "node_type"

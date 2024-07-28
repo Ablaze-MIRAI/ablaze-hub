@@ -9,7 +9,8 @@ module Flows
     def initialize(nodes:, **options)
       @options = options
       @options[:tag] ||= :form
-      @hide_back = options[:hide_back] || false
+      @options[:id] = @options[:group] if @options[:group]
+      @hide_back = options.delete(:hide_back) || false
       @method = @options[:method] || "post"
       @submit = @options[:submit] || nil
       @action = @options[:action] || nil

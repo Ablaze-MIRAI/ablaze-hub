@@ -110,8 +110,9 @@ module FlowsHelper
     if node["attributes"].nil? || node["attributes"]["value"].nil?
       return false
     end
+    value = node["attributes"]["value"]
 
-    if node["attributes"]["value"].end_with?(":back")
+    if value.end_with?(":back") || value == "credential-selection"
       return true
     end
 

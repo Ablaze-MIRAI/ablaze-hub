@@ -9,7 +9,7 @@
       <% flow.with_group(filter_only: "passkey") %>
       <% flow.with_divider(show_condition: flow.has_groups("oidc")) %>
       <% flow.with_group(filter_only: "oidc", classes: OIDC_CLASSES) %>
-      <% flow.with_divider(show_condition: flow.has_groups("code")) %>
+      <% flow.with_divider(show_condition: flow.has_groups("code") && flow.has_groups("oidc")) %>
       <% flow.with_group(filter_only: "code") %>
       <% flow.with_divider(show_condition: flow.has_back_node?, only_line: true) %>
       <% flow.with_back %>

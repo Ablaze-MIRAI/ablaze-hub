@@ -24,18 +24,17 @@ module Flows
       @meta = node["meta"]
       @group = node["group"]
       @attributes = node["attributes"]
-      is_back_button = is_back_node?(node)
-
       @messages = node["messages"].map do |message|
         Message.new(message)
       end
+      @is_back = is_back_node?(node)
 
       @options = options
       @tag = get_tag
       @options[:tag] ||= @tag
       @options[:name] = get_name
       @options[:id] = @id
-      @options[:formnovalidate] = true if is_back_button
+      @options[:formnovalidate] = true if bypass_validation?
       @options[:classes] = class_names(get_classes, "my-2", @options[:classes])
       @attributes.each do |key, value|
         if key == "node_type"
@@ -71,6 +70,17 @@ module Flows
       when "select"
       else
         return ""
+      end
+    end
+
+    def bypass_validation?
+      if @attributes.present?
+        if @attributes["value"].present?
+          value = @attributes["value"]
+          if value == "code" || @is_back
+            return true
+          end
+        end
       end
     end
 
